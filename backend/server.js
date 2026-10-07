@@ -13,17 +13,6 @@ const {
 const mlService = require('./services/mlService');
 const crypto = require('crypto');
 const path = require('path');
-const dns = require('dns');
-
-// ================================================================
-// FIX WINDOWS/NODE DNS SRV LOOKUP ISSUES WITH MONGODB ATLAS
-// ================================================================
-// Node's built-in resolver can fail to resolve mongodb+srv:// records
-// on some Windows networks even though the OS resolver works fine.
-// Forcing public DNS servers here fixes that.
-
-dns.setServers(['8.8.8.8', '1.1.1.1']);
-
 // ================================================================
 // LOAD ENVIRONMENT VARIABLES
 // ================================================================
@@ -45,17 +34,17 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 // ================================================================
 // MONGODB CONNECTION
 // ================================================================
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-  });
+if (!process.env.MONGODB_URI) {
+  throw new Error('MONGODB_URI must be configured');
+}
 
 // ================================================================
 // ROUTES
@@ -382,12 +371,14 @@ app.use(
 const PORT =
   process.env.PORT || 5000;
 
-app.listen(
-  PORT,
-  () => {
-
-    console.log(
-      `Server running on port ${PORT}`
-    );
-  }
-);
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('MongoDB connected');
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });

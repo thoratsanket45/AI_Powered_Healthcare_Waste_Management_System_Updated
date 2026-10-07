@@ -7,7 +7,10 @@ const axios = require('axios');
 const FormData = require('form-data');
 
 // Environment variable for inference URL (default matches implementation plan).
-const INFERENCE_URL = process.env.ML_INFERENCE_URL || 'http://localhost:8001/predict';
+const inferenceHost = process.env.ML_INFERENCE_URL;
+const INFERENCE_URL = inferenceHost
+  ? `${/^https?:\/\//i.test(inferenceHost) ? inferenceHost.replace(/\/$/, '') : `https://${inferenceHost.replace(/\/$/, '')}`}/predict`
+  : 'http://localhost:8001/predict';
 
 /**
  * Sends an image buffer to the inference service and returns the parsed JSON.

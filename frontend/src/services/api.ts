@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:5000/api';
+const configuredApiHost = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const apiOrigin = /^https?:\/\//i.test(configuredApiHost)
+  ? configuredApiHost.replace(/\/$/, '')
+  : `https://${configuredApiHost.replace(/\/$/, '')}`;
+const API_URL = `${apiOrigin}/api`;
 
 // Define response types for API calls
 interface AuthResponse {

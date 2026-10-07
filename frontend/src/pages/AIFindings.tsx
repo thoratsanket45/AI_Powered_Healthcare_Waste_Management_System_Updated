@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { wasteRequestService } from '../services/api';
+import api, { wasteRequestService } from '../services/api';
 
 // The AI classifier returns one of 7 detailed categories, but the
 // backend's WasteRequest schema only accepts 4 broad enum values:
@@ -61,7 +60,7 @@ export function AIFindings() {
       console.log('Uploading file:', file.name, file.type);
 
             // Expect extended response from the new ML inference flow
-      const resp = await axios.post<{
+      const resp = await api.post<{
         label: string;
         modelPrediction: string;
         classIndex: number;
@@ -69,13 +68,7 @@ export function AIFindings() {
         probabilities: Record<string, number>;
         treatment: string | string[];
         imageUrl: string;
-      }>(
-        'http://localhost:5000/api/classify',
-        data,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        }
-      );
+      }>('/classify', data);
 
       const {
         label,
