@@ -1,4 +1,3 @@
-```python
 # ml_service/app.py
 # FastAPI service for healthcare waste classification.
 # Loads the existing trained Keras model with serialization compatibility fixes.
@@ -244,4 +243,3 @@ async def predict(image: UploadFile = File(...)):
         confidence=confidence,
         probabilities=prob_map
     )
-```
