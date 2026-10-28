@@ -144,7 +144,7 @@ const treatmentMap = {
   'Metal Medical Instrument':
     'Handle carefully and assess contamination. Send reusable instruments for validated cleaning and sterilization where appropriate; dispose of damaged or contaminated instruments according to applicable biomedical waste procedures.'
 };
-```
+
 
 // ================================================================
 // HELPER FUNCTION
