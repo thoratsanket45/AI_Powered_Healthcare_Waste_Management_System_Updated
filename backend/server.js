@@ -115,29 +115,36 @@ const bucketName = process.env.S3_BUCKET_NAME;
 // TREATMENT RECOMMENDATIONS
 // ================================================================
 
+
 const treatmentMap = {
+  'Pathological Waste':
+    'Segregate body tissues and organs in the designated biomedical waste container. Follow applicable biomedical waste disposal procedures.',
 
-  "infectious waste":
-    "Use autoclaving or incineration to neutralize pathogens.",
+  'Glass Waste':
+    'Handle carefully to prevent breakage or injury. Segregate uncontaminated glass for appropriate recycling; contaminated medical glass must follow applicable biomedical waste procedures.',
 
-  "sharps waste":
-    "Disinfect using appropriate sterilization procedures and place in puncture-resistant sharps containers before authorized disposal.",
+  'Metal Waste':
+    'Segregate uncontaminated metal for appropriate recycling. Contaminated medical metal items must be handled according to applicable biomedical waste procedures.',
 
-  "pathological waste":
-    "Incineration or another authorized treatment method is generally preferred due to organic content.",
+  'Organic Waste':
+    'Segregate uncontaminated organic waste for appropriate composting or organic waste processing. Treat contaminated waste according to applicable biomedical waste procedures.',
 
-  "pharmaceutical waste":
-    "Use authorized pharmaceutical waste collection, return-to-supplier programs where applicable, encapsulation, or appropriate high-temperature treatment.",
+  'Plastic Waste':
+    'Identify whether the plastic is contaminated. Send only eligible, uncontaminated plastic for appropriate recycling; contaminated medical plastic must follow applicable biomedical waste disposal procedures.',
 
-  "chemical waste":
-    "Use appropriate neutralization or specialized chemical waste treatment according to the chemical involved.",
+  'Paper Waste':
+    'Segregate clean, uncontaminated paper for recycling. Dispose of contaminated paper and biomedical materials according to applicable biomedical waste procedures.',
 
-  "radioactive waste":
-    "Store in appropriate shielded containers and follow applicable radiation safety and regulatory protocols.",
+  'Sharps Waste':
+    'Immediately place needles and other sharps in an approved puncture-proof, leak-resistant sharps container. Never recap, bend, or handle used needles unnecessarily.',
 
-  "non-hazardous general waste":
-    "Use standard municipal disposal or an authorized sanitary landfill/recycling route where appropriate."
+  'Infectious Waste':
+    'Segregate potentially infectious materials in the designated biomedical waste container. Use appropriate protective equipment and follow applicable biomedical waste disposal procedures.',
+
+  'Metal Medical Instrument':
+    'Handle carefully and assess contamination. Send reusable instruments for validated cleaning and sterilization where appropriate; dispose of damaged or contaminated instruments according to applicable biomedical waste procedures.'
 };
+```
 
 // ================================================================
 // HELPER FUNCTION
@@ -242,30 +249,28 @@ app.post(
       // 4. MAP PREDICTION TO HIGH‑LEVEL WASTE CATEGORY
       // ------------------------------------------------------------
       const classToCategoryMap = {
-        '(BT) Body Tissue or Organ': 'Pathological Waste',
-        '(GE) Glass equipment-packaging 551': 'Recyclable Waste',
-        '(ME) Metal equipment -packaging': 'Recyclable Waste',
-        '(OW) Organic wastes': 'Pathological Waste',
-        '(PE) Plastic equipment-packaging': 'Recyclable Waste',
-        '(PP) Paper equipment-packaging': 'Recyclable Waste',
-        '(SN) Syringe needles': 'Sharps Waste',
-        'Gauze': 'Infectious Waste',
-        'Gloves': 'Infectious Waste',
-        'Mask': 'Infectious Waste',
-        'Syringe': 'Sharps Waste',
-        'Tweezers': 'Recyclable Waste'
-      };
+  '(BT) Body Tissue or Organ': 'Pathological Waste',
+  '(GE) Glass equipment-packaging 551': 'Glass Waste',
+  '(ME) Metal equipment -packaging': 'Metal Waste',
+  '(OW) Organic wastes': 'Organic Waste',
+  '(PE) Plastic equipment-packaging': 'Plastic Waste',
+  '(PP) Paper equipment-packaging': 'Paper Waste',
+  '(SN) Syringe needles': 'Sharps Waste',
+  'Gauze': 'Infectious Waste',
+  'Gloves': 'Infectious Waste',
+  'Mask': 'Infectious Waste',
+  'Syringe': 'Sharps Waste',
+  'Tweezers': 'Metal Medical Instrument'
+};
 
-      const wasteCategory = classToCategoryMap[predictedClass] || 'Unknown';
+const wasteCategory = classToCategoryMap[predictedClass] || 'Unknown';
 
       // ------------------------------------------------------------
       // 5. GET TREATMENT METHOD FROM EXISTING MAP
       // ------------------------------------------------------------
-      const treatmentKey = wasteCategory.toLowerCase();
-      let treatment = [];
-      if (treatmentMap[treatmentKey]) {
-        treatment = [treatmentMap[treatmentKey]];
-      }
+     const treatment = treatmentMap[wasteCategory]
+  ? [treatmentMap[wasteCategory]]
+  : ['No treatment recommendation available. Please consult your facility waste management protocol.'];
 
       // ------------------------------------------------------------
       // 6. SEND RESULT TO FRONTEND
