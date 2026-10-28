@@ -567,4 +567,3 @@ export function AIFindings() {
     </div>
   );
 }
-```
