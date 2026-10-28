@@ -23,10 +23,7 @@ interface AuthResponse {
 }
 
 const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: API_URL
 });
 
 // Add a request interceptor to include the token in requests
